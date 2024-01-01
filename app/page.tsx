@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const Home: NextPage = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen text-gray-900">
       {" "}
       {/* Flex container for the entire page */}
       <main className="flex-grow">
