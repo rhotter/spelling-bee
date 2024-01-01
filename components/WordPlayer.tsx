@@ -98,6 +98,7 @@ const WordPlayer: React.FC = () => {
           }}
           className="border border-gray-200 p-2 rounded"
           placeholder="Type the word here"
+          spellCheck={false}
         />
         {isCorrect === null && (
           <PaperAirplaneIcon
