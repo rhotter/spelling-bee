@@ -27,19 +27,18 @@ const WordPlayer: React.FC = () => {
       return;
     }
 
-    if (currentWord !== "") {
-      // play the same word again if the user hasn't answered yet
+    // Only set a new word if currentWord is empty
+    if (currentWord === "") {
+      const randomIndex = Math.floor(Math.random() * remainingWords.length);
+      const word = remainingWords[randomIndex];
+      setCurrentWord(word);
+      setIsCorrect(null);
+      setLastAttemptedWord("");
+      setUserInput("");
+    } else {
+      // If a word is already active, just play it again
       speakWord(currentWord);
-      return;
     }
-
-    const randomIndex = Math.floor(Math.random() * remainingWords.length);
-    const word = remainingWords[randomIndex];
-    setCurrentWord(word);
-    speakWord(word);
-    setIsCorrect(null);
-    setLastAttemptedWord("");
-    setUserInput("");
   };
 
   const checkAnswer = () => {
@@ -60,8 +59,23 @@ const WordPlayer: React.FC = () => {
     );
 
     setRemainingWords(newRemainingWords);
-    setCurrentWord("");
+
+    // Select a new word immediately
+    if (newRemainingWords.length > 0) {
+      const randomIndex = Math.floor(Math.random() * newRemainingWords.length);
+      const nextWord = newRemainingWords[randomIndex];
+      setCurrentWord(nextWord);
+    } else {
+      setCurrentWord("");
+    }
   };
+
+  useEffect(() => {
+    // This effect plays the word when currentWord changes and is not empty
+    if (currentWord !== "") {
+      speakWord(currentWord);
+    }
+  }, [currentWord]);
 
   return (
     <div className="flex flex-col items-center">
