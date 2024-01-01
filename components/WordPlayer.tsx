@@ -104,7 +104,12 @@ const WordPlayer: React.FC = () => {
         <input
           type="text"
           value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
+          onChange={(e) => {
+            setUserInput(e.target.value);
+            if (isCorrect !== null) {
+              setIsCorrect(null);
+            }
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               checkAnswer();
