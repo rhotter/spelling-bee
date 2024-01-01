@@ -14,10 +14,10 @@ const WordPlayer: React.FC = () => {
   const [lastAttemptedWord, setLastAttemptedWord] = useState<string>("");
 
   const [score, setScore] = useState<number>(0);
+  const [attempts, setAttempts] = useState<number>(0);
   const [mistakes, setMistakes] = useState<string[]>([]);
 
   useEffect(() => {
-    // Initialize the remaining words list from the imported word list
     setRemainingWords(wordList);
   }, []);
 
@@ -27,7 +27,6 @@ const WordPlayer: React.FC = () => {
       return;
     }
 
-    // Only set a new word if currentWord is empty
     if (currentWord === "") {
       const randomIndex = Math.floor(Math.random() * remainingWords.length);
       const word = remainingWords[randomIndex];
@@ -36,7 +35,6 @@ const WordPlayer: React.FC = () => {
       setLastAttemptedWord("");
       setUserInput("");
     } else {
-      // If a word is already active, just play it again
       speakWord(currentWord);
     }
   };
@@ -46,6 +44,7 @@ const WordPlayer: React.FC = () => {
       userInput.trim().toLowerCase() === currentWord.toLowerCase();
     setIsCorrect(isAnswerCorrect);
     setLastAttemptedWord(currentWord);
+    setAttempts(attempts + 1); // Increment attempts
 
     if (isAnswerCorrect) {
       setScore(score + 1);
@@ -53,14 +52,12 @@ const WordPlayer: React.FC = () => {
       setMistakes((mistakes) => [...mistakes, currentWord]);
     }
 
-    // Remove the word from the remaining words list
     const newRemainingWords = remainingWords.filter(
       (w, index) => w !== currentWord
     );
 
     setRemainingWords(newRemainingWords);
 
-    // Select a new word immediately
     if (newRemainingWords.length > 0) {
       const randomIndex = Math.floor(Math.random() * newRemainingWords.length);
       const nextWord = newRemainingWords[randomIndex];
@@ -71,11 +68,16 @@ const WordPlayer: React.FC = () => {
   };
 
   useEffect(() => {
-    // This effect plays the word when currentWord changes and is not empty
     if (currentWord !== "") {
       speakWord(currentWord);
     }
   }, [currentWord]);
+
+  // Function to calculate the percentage score
+  const getScorePercentage = () => {
+    if (attempts === 0) return "0%";
+    return `${((score / attempts) * 100).toFixed(0)}%`;
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -90,7 +92,7 @@ const WordPlayer: React.FC = () => {
               : ""
           }
         >
-          {score}
+          {`${score}/${attempts} (${getScorePercentage()})`}
         </span>
       </p>
 
