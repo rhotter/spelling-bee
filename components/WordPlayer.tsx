@@ -135,7 +135,7 @@ const WordPlayer: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="text-xl mb-4">
+      <p className="text-xl">
         Score:{" "}
         <span
           className={
@@ -152,7 +152,7 @@ const WordPlayer: React.FC = () => {
 
       <button
         onClick={playWord}
-        className="bg-blue-800 text-white p-2 rounded my-2"
+        className="bg-blue-800 text-white p-2 rounded my-6 hover:bg-blue-700"
       >
         Play Word
       </button>
@@ -177,7 +177,7 @@ const WordPlayer: React.FC = () => {
         />
         {isCorrect === null && (
           <PaperAirplaneIcon
-            className="h-6 w-6 text-blue-800 cursor-pointer"
+            className="h-10 w-10 text-blue-800 cursor-pointer hover:bg-blue-200/50 rounded-full p-2"
             onClick={checkAnswer}
           />
         )}
