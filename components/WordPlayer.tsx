@@ -92,7 +92,11 @@ const WordPlayer: React.FC = () => {
     source: string,
     target: string
   ): HighlightedText => {
-    const diffResult: Change[] = diffChars(source, target);
+    // Convert both strings to lower case for comparison, but use original strings for display
+    const sourceLower = source.toLowerCase();
+    const targetLower = target.toLowerCase();
+
+    const diffResult: Change[] = diffChars(sourceLower, targetLower);
     let sourceIndex = 0;
     let targetIndex = 0;
 
