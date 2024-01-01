@@ -14,7 +14,9 @@ const WordPlayer: React.FC = () => {
   const [lastAttemptedWord, setLastAttemptedWord] = useState<string>("");
 
   const [score, setScore] = useState<number>(0);
-  const [mistakes, setMistakes] = useState<string[]>([]);
+  const [mistakes, setMistakes] = useState<
+    { mistake: string; correct: string }[]
+  >([]);
 
   useEffect(() => {
     // Initialize the remaining words list from the imported word list
@@ -44,29 +46,31 @@ const WordPlayer: React.FC = () => {
   const checkAnswer = () => {
     const isAnswerCorrect =
       userInput.trim().toLowerCase() === currentWord.toLowerCase();
+
     setIsCorrect(isAnswerCorrect);
     setLastAttemptedWord(currentWord);
 
     if (isAnswerCorrect) {
       setScore(score + 1);
     } else {
-      setMistakes((mistakes) => [...mistakes, currentWord]);
+      // Update the mistake to include both the user's mistake and the correct word
+      setMistakes((mistakes) => [
+        ...mistakes,
+        { mistake: userInput, correct: currentWord },
+      ]);
     }
 
-    // Remove the word from the remaining words list
-    const newRemainingWords = remainingWords.filter(
-      (w, index) => w !== currentWord
-    );
+    // Update the remaining words list and reset the current word
+    setRemainingWords(remainingWords.filter((word) => word !== currentWord));
+    setCurrentWord("");
 
-    setRemainingWords(newRemainingWords);
-
-    // Select a new word immediately
-    if (newRemainingWords.length > 0) {
+    // Auto-select a new word from the remaining list
+    if (remainingWords.length > 1) {
+      const newRemainingWords = remainingWords.filter(
+        (word) => word !== currentWord
+      );
       const randomIndex = Math.floor(Math.random() * newRemainingWords.length);
-      const nextWord = newRemainingWords[randomIndex];
-      setCurrentWord(nextWord);
-    } else {
-      setCurrentWord("");
+      setCurrentWord(newRemainingWords[randomIndex]);
     }
   };
 
@@ -143,7 +147,12 @@ const WordPlayer: React.FC = () => {
           <h3 className="text-lg font-semibold">Mistakes:</h3>
           <ul className="list-disc">
             {mistakes.map((mistake, index) => (
-              <li key={index}>{mistake}</li>
+              <li key={index}>
+                Your answer:{" "}
+                <span className="text-red-500">{mistake.mistake}</span> |
+                Correct:{" "}
+                <span className="text-green-500">{mistake.correct}</span>
+              </li>
             ))}
           </ul>
         </div>
