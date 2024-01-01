@@ -4,6 +4,7 @@ import wordList from "../data/words.json"; // Import the word list
 import { speakWord } from "@/utils/speakWord";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { diffChars, Change } from "diff";
 
 const WordPlayer: React.FC = () => {
   const [remainingWords, setRemainingWords] = useState<string[]>([]);
@@ -55,8 +56,8 @@ const WordPlayer: React.FC = () => {
     } else {
       // Update the mistake to include both the user's mistake and the correct word
       setMistakes((mistakes) => [
-        ...mistakes,
         { mistake: userInput, correct: currentWord },
+        ...mistakes,
       ]);
     }
 
@@ -81,6 +82,52 @@ const WordPlayer: React.FC = () => {
       speakWord(currentWord);
     }
   }, [currentWord]);
+
+  interface HighlightedText {
+    highlightedSource: JSX.Element[];
+    highlightedTarget: JSX.Element[];
+  }
+
+  const highlightDifferences = (
+    source: string,
+    target: string
+  ): HighlightedText => {
+    const diffResult: Change[] = diffChars(source, target);
+    let sourceIndex = 0;
+    let targetIndex = 0;
+
+    const highlightedSource: JSX.Element[] = [];
+    const highlightedTarget: JSX.Element[] = [];
+
+    diffResult.forEach((part, index) => {
+      if (part.added) {
+        highlightedTarget.push(
+          <span className="underline font-bold" key={`target-${index}`}>
+            {part.value}
+          </span>
+        );
+        targetIndex += part.count ?? 0;
+      } else if (part.removed) {
+        highlightedSource.push(
+          <span className="underline font-bold" key={`source-${index}`}>
+            {part.value}
+          </span>
+        );
+        sourceIndex += part.count ?? 0;
+      } else {
+        highlightedSource.push(
+          <span key={`source-${index}`}>{part.value}</span>
+        );
+        highlightedTarget.push(
+          <span key={`target-${index}`}>{part.value}</span>
+        );
+        sourceIndex += part.count ?? 0;
+        targetIndex += part.count ?? 0;
+      }
+    });
+
+    return { highlightedSource, highlightedTarget };
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -139,22 +186,26 @@ const WordPlayer: React.FC = () => {
             </div>
           ))}
       </div>
-      {isCorrect === false && (
+      {/* {isCorrect === false && (
         <span className="text-red-500">{lastAttemptedWord}</span>
-      )}
+      )} */}
 
       {mistakes.length > 0 && (
         <div className="mt-4">
           <h3 className="text-lg font-semibold">Mistakes:</h3>
           <ul className="list-disc">
-            {mistakes.reverse().map((mistake, index) => (
-              <li key={index}>
-                Your answer:{" "}
-                <span className="text-red-500">{mistake.mistake}</span> |
-                Correct:{" "}
-                <span className="text-green-500">{mistake.correct}</span>
-              </li>
-            ))}
+            {mistakes.map((mistake, index) => {
+              const { highlightedSource, highlightedTarget } =
+                highlightDifferences(mistake.mistake, mistake.correct);
+              return (
+                <li key={index}>
+                  Your answer:{" "}
+                  <span className="text-red-500">{highlightedSource}</span> |
+                  Correct:{" "}
+                  <span className="text-green-500">{highlightedTarget}</span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
