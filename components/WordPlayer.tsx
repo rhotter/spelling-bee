@@ -203,9 +203,8 @@ const WordPlayer: React.FC = () => {
                 highlightDifferences(mistake.mistake, mistake.correct);
               return (
                 <li key={index}>
-                  Your answer:{" "}
-                  <span className="text-red-500">{highlightedSource}</span> |
-                  Correct:{" "}
+                  <span className="text-red-500">{highlightedSource}</span>{" "}
+                  {" -> "}
                   <span className="text-green-500">{highlightedTarget}</span>
                 </li>
               );
