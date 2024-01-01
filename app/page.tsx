@@ -6,10 +6,8 @@ import WordPlayer from "../components/WordPlayer";
 const Home: NextPage = () => {
   return (
     <div>
-      <main className="flex flex-col items-center justify-center min-h-screen py-2">
-        <h1 className="text-4xl font-bold mb-4">
-          Welcome to the Spelling Bee!
-        </h1>
+      <main className="flex flex-col items-center py-2 pt-8">
+        <h1 className="text-4xl font-bold mb-4">HFS Spelling Bee Practice</h1>
         <WordPlayer />
       </main>
     </div>
