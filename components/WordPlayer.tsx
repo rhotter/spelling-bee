@@ -37,7 +37,6 @@ const WordPlayer: React.FC = () => {
       setIsCorrect(null);
       setLastAttemptedWord("");
       setUserInput("");
-      speakWord(word);
     } else {
       // If a word is already active, just play it again
       speakWord(currentWord);
