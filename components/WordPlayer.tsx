@@ -37,6 +37,7 @@ const WordPlayer: React.FC = () => {
       setIsCorrect(null);
       setLastAttemptedWord("");
       setUserInput("");
+      speakWord(word);
     } else {
       // If a word is already active, just play it again
       speakWord(currentWord);
@@ -72,6 +73,7 @@ const WordPlayer: React.FC = () => {
       const randomIndex = Math.floor(Math.random() * newRemainingWords.length);
       setCurrentWord(newRemainingWords[randomIndex]);
     }
+    setUserInput("");
   };
 
   useEffect(() => {
@@ -146,7 +148,7 @@ const WordPlayer: React.FC = () => {
         <div className="mt-4">
           <h3 className="text-lg font-semibold">Mistakes:</h3>
           <ul className="list-disc">
-            {mistakes.map((mistake, index) => (
+            {mistakes.reverse().map((mistake, index) => (
               <li key={index}>
                 Your answer:{" "}
                 <span className="text-red-500">{mistake.mistake}</span> |
