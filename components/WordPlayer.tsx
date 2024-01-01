@@ -96,7 +96,9 @@ const WordPlayer: React.FC = () => {
             </div>
           ))}
       </div>
-      <span className="text-red-500">{lastAttemptedWord}</span>
+      {isCorrect === false && (
+        <span className="text-red-500">{lastAttemptedWord}</span>
+      )}
 
       {mistakes.length > 0 && (
         <div className="mt-4">
