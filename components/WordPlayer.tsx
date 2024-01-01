@@ -65,11 +65,24 @@ const WordPlayer: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="text-xl mb-4">Score: {score}</p>
+      <p className="text-xl mb-4">
+        Score:{" "}
+        <span
+          className={
+            isCorrect === null
+              ? "text-gray-500"
+              : isCorrect
+              ? "text-green-500"
+              : ""
+          }
+        >
+          {score}
+        </span>
+      </p>
 
       <button
         onClick={playWord}
-        className="bg-blue-500 text-white p-2 rounded my-2"
+        className="bg-blue-800 text-white p-2 rounded my-2"
       >
         Play Word
       </button>
@@ -78,12 +91,17 @@ const WordPlayer: React.FC = () => {
           type="text"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              checkAnswer();
+            }
+          }}
           className="border border-gray-200 p-2 rounded"
           placeholder="Type the word here"
         />
         {isCorrect === null && (
           <PaperAirplaneIcon
-            className="h-6 w-6 text-blue-500 cursor-pointer"
+            className="h-6 w-6 text-blue-800 cursor-pointer"
             onClick={checkAnswer}
           />
         )}
