@@ -1,15 +1,20 @@
 "use client";
-// components/WordPlayer.tsx
 import React, { useState, useEffect } from "react";
 import wordList from "../data/words.json"; // Import the word list
 import { speakWord } from "@/utils/speakWord";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 
 const WordPlayer: React.FC = () => {
   const [remainingWords, setRemainingWords] = useState<string[]>([]);
   const [currentWord, setCurrentWord] = useState<string>("");
   const [userInput, setUserInput] = useState<string>("");
-  const [result, setResult] = useState<string>("");
+
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [lastAttemptedWord, setLastAttemptedWord] = useState<string>("");
+
   const [score, setScore] = useState<number>(0);
+  const [mistakes, setMistakes] = useState<string[]>([]);
 
   useEffect(() => {
     // Initialize the remaining words list from the imported word list
@@ -21,27 +26,41 @@ const WordPlayer: React.FC = () => {
       alert("All words completed!");
       return;
     }
+
+    if (currentWord !== "") {
+      // play the same word again if the user hasn't answered yet
+      speakWord(currentWord);
+      return;
+    }
+
     const randomIndex = Math.floor(Math.random() * remainingWords.length);
     const word = remainingWords[randomIndex];
     setCurrentWord(word);
     speakWord(word);
-    setResult("");
+    setIsCorrect(null);
+    setLastAttemptedWord("");
     setUserInput("");
-
-    // Remove the word from the remaining words list
-    const newRemainingWords = remainingWords.filter(
-      (w, index) => index !== randomIndex
-    );
-    setRemainingWords(newRemainingWords);
   };
 
   const checkAnswer = () => {
-    if (userInput.trim().toLowerCase() === currentWord.toLowerCase()) {
-      setResult("Correct!");
+    const isAnswerCorrect =
+      userInput.trim().toLowerCase() === currentWord.toLowerCase();
+    setIsCorrect(isAnswerCorrect);
+    setLastAttemptedWord(currentWord);
+
+    if (isAnswerCorrect) {
       setScore(score + 1);
     } else {
-      setResult("Incorrect");
+      setMistakes((mistakes) => [...mistakes, currentWord]);
     }
+
+    // Remove the word from the remaining words list
+    const newRemainingWords = remainingWords.filter(
+      (w, index) => w !== currentWord
+    );
+
+    setRemainingWords(newRemainingWords);
+    setCurrentWord("");
   };
 
   return (
@@ -54,20 +73,41 @@ const WordPlayer: React.FC = () => {
       >
         Play Word
       </button>
-      <input
-        type="text"
-        value={userInput}
-        onChange={(e) => setUserInput(e.target.value)}
-        className="border border-gray-300 p-2 rounded"
-        placeholder="Type the word here"
-      />
-      <button
-        onClick={checkAnswer}
-        className="bg-green-500 text-white p-2 rounded my-2"
-      >
-        Check Answer
-      </button>
-      <p className="text-xl">{result}</p>
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          className="border border-gray-200 p-2 rounded"
+          placeholder="Type the word here"
+        />
+        {isCorrect === null && (
+          <PaperAirplaneIcon
+            className="h-6 w-6 text-blue-500 cursor-pointer"
+            onClick={checkAnswer}
+          />
+        )}
+        {isCorrect !== null &&
+          (isCorrect ? (
+            <CheckCircleIcon className="h-6 w-6 text-green-500" />
+          ) : (
+            <div className="flex items-center space-x-2">
+              <XCircleIcon className="h-6 w-6 text-red-500" />
+            </div>
+          ))}
+      </div>
+      <span className="text-red-500">{lastAttemptedWord}</span>
+
+      {mistakes.length > 0 && (
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold">Mistakes:</h3>
+          <ul className="list-disc">
+            {mistakes.map((mistake, index) => (
+              <li key={index}>{mistake}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
