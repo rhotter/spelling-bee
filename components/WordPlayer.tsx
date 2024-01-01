@@ -177,7 +177,7 @@ const WordPlayer: React.FC = () => {
         />
         {isCorrect === null && (
           <PaperAirplaneIcon
-            className="h-10 w-10 text-blue-800 cursor-pointer hover:bg-blue-200/50 rounded-full p-2"
+            className="h-6 w-6 text-blue-800 cursor-pointer hover:text-blue-600"
             onClick={checkAnswer}
           />
         )}
