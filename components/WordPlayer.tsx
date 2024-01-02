@@ -106,24 +106,28 @@ const WordPlayer: React.FC = () => {
     diffResult.forEach((part, index) => {
       if (part.added) {
         highlightedTarget.push(
-          <span className="underline font-bold" key={`target-${index}`}>
+          <span className=" font-bold text-green-600" key={`target-${index}`}>
             {part.value}
           </span>
         );
         targetIndex += part.count ?? 0;
       } else if (part.removed) {
         highlightedSource.push(
-          <span className="underline font-bold" key={`source-${index}`}>
+          <span className=" font-bold text-red-600" key={`source-${index}`}>
             {part.value}
           </span>
         );
         sourceIndex += part.count ?? 0;
       } else {
         highlightedSource.push(
-          <span key={`source-${index}`}>{part.value}</span>
+          <span className="text-gray-600" key={`source-${index}`}>
+            {part.value}
+          </span>
         );
         highlightedTarget.push(
-          <span key={`target-${index}`}>{part.value}</span>
+          <span className="text-gray-600" key={`target-${index}`}>
+            {part.value}
+          </span>
         );
         sourceIndex += part.count ?? 0;
         targetIndex += part.count ?? 0;
@@ -196,16 +200,15 @@ const WordPlayer: React.FC = () => {
 
       {mistakes.length > 0 && (
         <div className="mt-4">
-          <h3 className="text-lg font-semibold">Mistakes:</h3>
+          <h3 className="text-lg font-semibold">Mistakes</h3>
           <ul className="list-disc">
             {mistakes.map((mistake, index) => {
               const { highlightedSource, highlightedTarget } =
                 highlightDifferences(mistake.mistake, mistake.correct);
               return (
                 <li key={index}>
-                  <span className="text-red-500">{highlightedSource}</span>{" "}
-                  {" -> "}
-                  <span className="text-green-500">{highlightedTarget}</span>
+                  <span className="">{highlightedSource}</span> {" -> "}
+                  <span className="">{highlightedTarget}</span>
                 </li>
               );
             })}
