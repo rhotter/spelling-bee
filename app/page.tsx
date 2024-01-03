@@ -2,6 +2,9 @@
 import type { NextPage } from "next";
 import WordPlayer from "../components/WordPlayer";
 import Link from "next/link";
+import { Comic_Neue } from "next/font/google";
+
+const comic = Comic_Neue({ weight: ["400", "700"], subsets: ["latin"] });
 
 const Home: NextPage = () => {
   return (
@@ -10,7 +13,9 @@ const Home: NextPage = () => {
       {/* Flex container for the entire page */}
       <main className="flex-grow">
         <div className="flex flex-col items-center py-2 pt-8">
-          <h1 className="text-4xl font-bold mb-4">HFS Spelling Bee Practice</h1>
+          <h1 className={`text-4xl font-bold mb-4 ${comic.className}`}>
+            HFS Spelling Bee Practice
+          </h1>
           <WordPlayer />
         </div>
       </main>

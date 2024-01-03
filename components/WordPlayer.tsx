@@ -1,18 +1,79 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import wordList from "../data/words.json"; // Import the word list
+import wordsFromAllGrades from "../data/words.json"; // Import the word list
 import { speakWord } from "@/utils/speakWord";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { diffChars, Change } from "diff";
 
 const WordPlayer: React.FC = () => {
+  const allGrades = wordsFromAllGrades.map((gradeWords) => gradeWords.grade);
+  const [gradesIncluded, setGradesIncluded] = useState<number[]>(allGrades);
+  const [isStarted, setIsStarted] = useState<boolean>(false);
+
+  const wordsIncluded = wordsFromAllGrades
+    .filter((gradeWords) => gradesIncluded.includes(gradeWords.grade))
+    .map((gradeWords) => gradeWords.words)
+    .flat();
+
+  return (
+    <>
+      {isStarted ? (
+        <Game
+          wordList={wordsIncluded}
+          setIsStarted={setIsStarted}
+          gradesIncluded={gradesIncluded}
+        />
+      ) : (
+        <div>
+          <div className="mb-4 mt-4 font-semibold">Pick Grade</div>
+          <div className="flex flex-wrap space-x-2">
+            {allGrades.map((grade) => (
+              <span key={grade}>
+                <button
+                  onClick={(e) => {
+                    setGradesIncluded([grade]);
+                    setIsStarted(true);
+                  }}
+                  className=" py-2 px-4 rounded bg-blue-200 hover:bg-blue-300"
+                >
+                  {grade}
+                </button>
+              </span>
+            ))}
+            <span>
+              <button
+                onClick={(e) => {
+                  setGradesIncluded(allGrades);
+                  setIsStarted(true);
+                }}
+                className=" py-2 px-4 rounded bg-blue-200 hover:bg-blue-300"
+              >
+                {" "}
+                All grades{" "}
+              </button>
+            </span>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const Game = ({
+  wordList,
+  setIsStarted,
+  gradesIncluded,
+}: {
+  wordList: string[];
+  setIsStarted: React.Dispatch<React.SetStateAction<boolean>>;
+  gradesIncluded: number[];
+}) => {
   const [remainingWords, setRemainingWords] = useState<string[]>([]);
   const [currentWord, setCurrentWord] = useState<string>("");
   const [userInput, setUserInput] = useState<string>("");
 
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [lastAttemptedWord, setLastAttemptedWord] = useState<string>("");
 
   const [score, setScore] = useState<number>(0);
   const [mistakes, setMistakes] = useState<
@@ -26,6 +87,7 @@ const WordPlayer: React.FC = () => {
 
   const playWord = () => {
     if (remainingWords.length === 0) {
+      setIsStarted(false);
       alert("All words completed!");
       return;
     }
@@ -36,7 +98,6 @@ const WordPlayer: React.FC = () => {
       const word = remainingWords[randomIndex];
       setCurrentWord(word);
       setIsCorrect(null);
-      setLastAttemptedWord("");
       setUserInput("");
     } else {
       // If a word is already active, just play it again
@@ -49,7 +110,6 @@ const WordPlayer: React.FC = () => {
       userInput.trim().toLowerCase() === currentWord.toLowerCase();
 
     setIsCorrect(isAnswerCorrect);
-    setLastAttemptedWord(currentWord);
 
     if (isAnswerCorrect) {
       setScore(score + 1);
@@ -139,7 +199,14 @@ const WordPlayer: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="text-xl">
+      <p className="text-gray-500">
+        Remaining:{" "}
+        <span className="text-blue-800 font-semibold">
+          {remainingWords.length}
+        </span>
+        {" | "} Grade: <span className="">{gradesIncluded.join(", ")}</span>
+      </p>
+      <p className="text-xl mt-8 mb-2">
         Score:{" "}
         <span
           className={
@@ -194,9 +261,6 @@ const WordPlayer: React.FC = () => {
             </div>
           ))}
       </div>
-      {/* {isCorrect === false && (
-        <span className="text-red-500">{lastAttemptedWord}</span>
-      )} */}
 
       {mistakes.length > 0 && (
         <div className="mt-4">
